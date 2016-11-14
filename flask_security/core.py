@@ -59,6 +59,7 @@ _default_config = {
     'CHANGE_PASSWORD_TEMPLATE': 'security/change_password.html',
     'SEND_CONFIRMATION_TEMPLATE': 'security/send_confirmation.html',
     'SEND_LOGIN_TEMPLATE': 'security/send_login.html',
+    'USER_INVITE_TEMPLATE': 'security/user_invite.html',
     'CONFIRMABLE': False,
     'REGISTERABLE': False,
     'RECOVERABLE': False,
