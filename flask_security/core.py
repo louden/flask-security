@@ -44,6 +44,7 @@ _default_config = {
     'RESET_URL': '/reset',
     'CHANGE_URL': '/change',
     'CONFIRM_URL': '/confirm',
+    'INVITE_URL': '/invite',
     'POST_LOGIN_VIEW': '/',
     'POST_LOGOUT_VIEW': '/',
     'CONFIRM_ERROR_VIEW': None,
@@ -120,6 +121,8 @@ _default_messages = {
         'Your email has already been confirmed.', 'info'),
     'INVALID_CONFIRMATION_TOKEN': (
         'Invalid confirmation token.', 'error'),
+    'INVALID_INVITATION_TOKEN': (
+        'Invalid invitation token.', 'error'),
     'EMAIL_ALREADY_ASSOCIATED': (
         '%(email)s is already associated with an account.', 'error'),
     'PASSWORD_MISMATCH': (
@@ -139,9 +142,13 @@ _default_messages = {
         'Email requires confirmation.', 'error'),
     'CONFIRMATION_REQUEST': (
         'Confirmation instructions have been sent to %(email)s.', 'info'),
+    'INVITATION_REQUEST': (
+        'An invitation has been sent to %(email)s.', 'info'),
     'CONFIRMATION_EXPIRED': (
         'You did not confirm your email within %(within)s. New instructions to confirm your email '
         'have been sent to %(email)s.', 'error'),
+    'INVITATION_EXPIRED': (
+        'You did not respond to your invitation within %(within)s.  It has expired.', 'error'),
     'LOGIN_EXPIRED': (
         'You did not login within %(within)s. New instructions to login have been sent to '
         '%(email)s.', 'error'),

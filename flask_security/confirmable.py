@@ -52,20 +52,20 @@ def send_confirmation_instructions(user):
     return token
 
 
-def send_invitation(email):
+def send_invitation(user):
     """Sends the registration invitation email for the specified user.
 
-    :param email: The email of the invite
+    :param user: The user to send the invitation to
     :param token: The confirmation token
     """
 
-    invitation_link, token = generate_invite_link(email)
+    invitation_link, token = generate_invite_link(user)
 
-    send_mail(config_value('EMAIL_SUBJECT_INVITE'), email,
-              'user_invitation', email=email,
+    send_mail(config_value('EMAIL_SUBJECT_INVITE'), user,
+              'user_invitation', user=user,
               invitation_link=invitation_link)
 
-    invitation_sent.send(app._get_current_object(), email=email)
+    invitation_sent.send(app._get_current_object(), user=user)
     return token
 
 
@@ -78,12 +78,12 @@ def generate_confirmation_token(user):
     return _security.confirm_serializer.dumps(data)
 
 
-def generate_invitation_token(email):
+def generate_invitation_token(user):
     """Generates a unique confirmation token for the specified invitee.
 
-    :param email: The email of the invited user
+    :param user: The user to work with
     """
-    data = [md5(email)]
+    data = [str(user.id), md5(user.email)]
     return _security.confirm_serializer.dumps(data)
 
 

@@ -36,7 +36,8 @@ _default_field_labels = {
     'retype_password': 'Retype Password',
     'new_password': 'New Password',
     'change_password': 'Change Password',
-    'send_login_link': 'Send Login Link'
+    'send_login_link': 'Send Login Link',
+    'invite': 'Invite User'
 }
 
 
@@ -291,18 +292,14 @@ class ChangePasswordForm(Form, PasswordFormMixin):
         return True
 
 
-class UserInviteForm(Form):
-    """Default User Invite Form"""
+class InviteUserForm(Form, UniqueEmailFormMixin):
+    submit = SubmitField(get_form_field_label('invite'))
+    user = None
 
-    email = StringField(get_form_field_label('email'))
-    submit = SubmitField(get_form_field_label('login'))
+    def to_dict(form):
+        def is_field_and_user_attr(member):
+            return isinstance(member, Field) and \
+                hasattr(_datastore.user_model, member.name)
 
-    def validate(self):
-        if not super(LoginForm, self).validate():
-            return False
-
-        if self.email.data.strip() == '':
-            self.email.errors.append(get_message('EMAIL_NOT_PROVIDED')[0])
-            return False
-
-        return True
+        fields = inspect.getmembers(form, is_field_and_user_attr)
+        return dict((key, value.data) for key, value in fields)

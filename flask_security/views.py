@@ -16,7 +16,8 @@ from werkzeug.datastructures import MultiDict
 from werkzeug.local import LocalProxy
 
 from .confirmable import send_confirmation_instructions, \
-    confirm_user, confirm_email_token_status
+    confirm_user, confirm_email_token_status, send_invitation, \
+    confirm_invite_token_status
 from .decorators import login_required, anonymous_user_required
 from .passwordless import send_login_instructions, \
     login_token_status
@@ -206,6 +207,22 @@ def send_confirmation():
                                      **_ctx('send_confirmation'))
 
 
+def invite_user():
+    """ View function which sends invitation """
+
+    form_class = _security.user_invite_form
+
+    form = form_class()
+
+    if form.validate_on_submit():
+        send_invitation(form.user)
+        do_flash(*get_message('INVITATION_REQUEST', email=form.user.email))
+
+    return _security.render_template(config_value('USER_INVITE_TEMPLATE'),
+                                     send_user_invitation_form=form,
+                                     **_ctx('send_invite'))
+
+
 def confirm_email(token):
     """View function which handles a email confirmation request."""
 
@@ -221,6 +238,37 @@ def confirm_email(token):
     if invalid or expired:
         return redirect(get_url(_security.confirm_error_view) or
                         url_for('send_confirmation'))
+
+    if user != current_user:
+        logout_user()
+        login_user(user)
+
+    if confirm_user(user):
+        after_this_request(_commit)
+        msg = 'EMAIL_CONFIRMED'
+    else:
+        msg = 'ALREADY_CONFIRMED'
+
+    do_flash(*get_message(msg))
+
+    return redirect(get_url(_security.post_confirm_view) or
+                    get_url(_security.post_login_view))
+
+
+def confirm_invitation(token):
+    """View function which handles a email confirmation request."""
+
+    expired, invalid, user = confirm_email_token_status(token)
+
+    if not user or invalid:
+        invalid = True
+        do_flash(*get_message('INVALID_INVITATION_TOKEN'))
+    if expired:
+        send_confirmation_instructions(user)
+        do_flash(*get_message('INVITATION_EXPIRED', email=user.email,
+                              within=_security.confirm_email_within))
+    if invalid or expired:
+        return redirect(get_url(_security.confirm_error_view))
 
     if user != current_user:
         logout_user()
