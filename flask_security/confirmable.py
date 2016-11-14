@@ -16,7 +16,7 @@ from werkzeug.local import LocalProxy
 
 from .utils import send_mail, md5, url_for_security, get_token_status,\
     config_value
-from .signals import user_confirmed, confirm_instructions_sent
+from .signals import user_confirmed, confirm_instructions_sent, invitation_sent
 
 
 # Convenient references
@@ -28,6 +28,11 @@ _datastore = LocalProxy(lambda: _security.datastore)
 def generate_confirmation_link(user):
     token = generate_confirmation_token(user)
     return url_for_security('confirm_email', token=token, _external=True), token
+
+
+def generate_invite_link(user):
+    token = generate_invitation_token(user)
+    return url_for_security('invite_email', token=token, _external=True), token
 
 
 def send_confirmation_instructions(user):
@@ -47,12 +52,38 @@ def send_confirmation_instructions(user):
     return token
 
 
+def send_invitation(email):
+    """Sends the registration invitation email for the specified user.
+
+    :param email: The email of the invite
+    :param token: The confirmation token
+    """
+
+    invitation_link, token = generate_invite_link(email)
+
+    send_mail(config_value('EMAIL_SUBJECT_INVITE'), email,
+              'user_invitation', email=email,
+              invitation_link=invitation_link)
+
+    invitation_sent.send(app._get_current_object(), email=email)
+    return token
+
+
 def generate_confirmation_token(user):
     """Generates a unique confirmation token for the specified user.
 
     :param user: The user to work with
     """
     data = [str(user.id), md5(user.email)]
+    return _security.confirm_serializer.dumps(data)
+
+
+def generate_invitation_token(email):
+    """Generates a unique confirmation token for the specified invitee.
+
+    :param email: The email of the invited user
+    """
+    data = [md5(email)]
     return _security.confirm_serializer.dumps(data)
 
 
@@ -72,6 +103,17 @@ def confirm_email_token_status(token):
     :param token: The confirmation token
     """
     return get_token_status(token, 'confirm', 'CONFIRM_EMAIL')
+
+
+def confirm_invite_token_status(token):
+    """Returns the expired status, invalid status, and user of an invitation's
+    token. For example::
+
+        expired, invalid, user = confirm_invite_token_status('...')
+
+    :param token: The confirmation token
+    """
+    return get_token_status(token, 'invite', 'INVITE_EMAIL')
 
 
 def confirm_user(user):
