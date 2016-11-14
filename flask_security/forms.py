@@ -289,3 +289,20 @@ class ChangePasswordForm(Form, PasswordFormMixin):
             self.password.errors.append(get_message('PASSWORD_IS_THE_SAME')[0])
             return False
         return True
+
+
+class UserInviteForm(Form):
+    """Default User Invite Form"""
+
+    email = StringField(get_form_field_label('email'))
+    submit = SubmitField(get_form_field_label('login'))
+
+    def validate(self):
+        if not super(LoginForm, self).validate():
+            return False
+
+        if self.email.data.strip() == '':
+            self.email.errors.append(get_message('EMAIL_NOT_PROVIDED')[0])
+            return False
+
+        return True
