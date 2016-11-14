@@ -24,7 +24,7 @@ from .utils import config_value as cv, get_config, md5, url_for_security, string
 from .views import create_blueprint
 from .forms import LoginForm, ConfirmRegisterForm, RegisterForm, \
     ForgotPasswordForm, ChangePasswordForm, ResetPasswordForm, \
-    SendConfirmationForm, PasswordlessLoginForm
+    SendConfirmationForm, PasswordlessLoginForm, UserInviteForm
 
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])
@@ -100,7 +100,8 @@ _default_config = {
         # And always last one...
         'plaintext'
     ],
-    'DEPRECATED_PASSWORD_SCHEMES': ['auto']
+    'DEPRECATED_PASSWORD_SCHEMES': ['auto'],
+    'ALLOW_INVITE_USER': False,
 }
 
 #: Default Flask-Security messages
@@ -173,6 +174,8 @@ _default_messages = {
         'Please log in to access this page.', 'info'),
     'REFRESH': (
         'Please reauthenticate to access this page.', 'info'),
+    'USER_INVITED': (
+        'An invitation has been sent to %(email)s.', 'success'),    
 }
 
 _default_forms = {
@@ -184,6 +187,7 @@ _default_forms = {
     'change_password_form': ChangePasswordForm,
     'send_confirmation_form': SendConfirmationForm,
     'passwordless_login_form': PasswordlessLoginForm,
+    'user_invite_form': UserInviteForm,
 }
 
 
