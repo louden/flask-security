@@ -24,7 +24,8 @@ from .utils import config_value as cv, get_config, md5, url_for_security, string
 from .views import create_blueprint
 from .forms import LoginForm, ConfirmRegisterForm, RegisterForm, \
     ForgotPasswordForm, ChangePasswordForm, ResetPasswordForm, \
-    SendConfirmationForm, PasswordlessLoginForm, UserInviteForm
+    SendConfirmationForm, PasswordlessLoginForm, UserInviteForm, \
+    InviteNewPasswordForm
 
 # Convenient references
 _security = LocalProxy(lambda: current_app.extensions['security'])
@@ -61,6 +62,7 @@ _default_config = {
     'SEND_CONFIRMATION_TEMPLATE': 'security/send_confirmation.html',
     'SEND_LOGIN_TEMPLATE': 'security/send_login.html',
     'USER_INVITE_TEMPLATE': 'security/user_invite.html',
+    'INVITE_NEW_PASSWORD_TEMPLATE': 'security/set_password_after_invite.html',
     'CONFIRMABLE': False,
     'REGISTERABLE': False,
     'RECOVERABLE': False,
@@ -199,6 +201,7 @@ _default_forms = {
     'send_confirmation_form': SendConfirmationForm,
     'passwordless_login_form': PasswordlessLoginForm,
     'user_invite_form': UserInviteForm,
+    'invite_new_password_form': InviteNewPasswordForm
 }
 
 

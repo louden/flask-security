@@ -303,3 +303,20 @@ class InviteUserForm(Form, UniqueEmailFormMixin):
 
         fields = inspect.getmembers(form, is_field_and_user_attr)
         return dict((key, value.data) for key, value in fields)
+
+
+class InviteNewPasswordForm(Form, NewPasswordFormMixin):
+    new_password_confirm = PasswordField(
+        get_form_field_label('retype_password'),
+        validators=[EqualTo('new_password', message='RETYPE_PASSWORD_MISMATCH')])
+
+    submit = SubmitField(get_form_field_label('change_password'))
+
+    def validate(self):
+        if not super(ChangePasswordForm, self).validate():
+            return False
+
+        if not verify_and_update_password(self.password.data, current_user):
+            self.password.errors.append(get_message('INVALID_PASSWORD')[0])
+            return False
+        return True

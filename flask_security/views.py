@@ -207,7 +207,7 @@ def send_confirmation():
                                      **_ctx('send_confirmation'))
 
 
-def invite_user():
+def user_invite():
     """ View function which sends invitation """
 
     form_class = _security.user_invite_form
@@ -215,7 +215,8 @@ def invite_user():
     form = form_class()
 
     if form.validate_on_submit():
-        send_invitation(form.user)
+        user = register_user(**form.to_dict())
+        send_invitation(user)
         do_flash(*get_message('INVITATION_REQUEST', email=form.user.email))
 
     return _security.render_template(config_value('USER_INVITE_TEMPLATE'),
@@ -284,6 +285,27 @@ def confirm_invitation(token):
 
     return redirect(get_url(_security.post_confirm_view) or
                     get_url(_security.post_login_view))
+
+
+@login_required
+def set_password_after_invite():
+    """View function to handle setting the password when a user accepts an invitation."""
+
+    form_class = _security.invite_new_password_form
+
+    form = form_class()
+
+    if form.validate_on_submit():
+        after_this_request(_commit)
+        change_user_password(current_user, form.new_password.data)
+        if request.json is None:
+            do_flash(*get_message('PASSWORD_CHANGE'))
+            return redirect(get_url(_security.post_change_view) or
+                            get_url(_security.post_login_view))
+
+    return _security.render_template(config_value('INVITE_NEW_PASSWORD_TEMPLATE'),
+                                     invite_new_password_form=form,
+                                     **_ctx('change_password'))
 
 
 @anonymous_user_required
