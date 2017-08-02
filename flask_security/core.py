@@ -36,6 +36,7 @@ _default_config = {
     'URL_PREFIX': None,
     'SUBDOMAIN': None,
     'FLASH_MESSAGES': True,
+    'MARKUP_FLASH': True,
     'PASSWORD_HASH': 'plaintext',
     'PASSWORD_SALT': None,
     'LOGIN_URL': '/login',

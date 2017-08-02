@@ -22,7 +22,7 @@ except ImportError:  # pragma: no cover
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 
-from flask import url_for, flash, current_app, request, session, render_template
+from flask import url_for, flash, current_app, request, session, render_template, Markup
 from flask_login import login_user as _login_user, logout_user as _logout_user
 from flask_mail import Message
 from flask_principal import Identity, AnonymousIdentity, identity_changed
@@ -173,7 +173,10 @@ def do_flash(message, category=None):
     :param category: The flash message category
     """
     if config_value('FLASH_MESSAGES'):
-        flash(message, category)
+        if config_value('MARKUP_FLASH'):
+            flash(Markup(message), category)
+        else:
+            flash(message, category)
 
 
 def get_url(endpoint_or_url):
