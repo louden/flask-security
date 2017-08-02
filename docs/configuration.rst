@@ -21,6 +21,9 @@ Core
 ``SECURITY_FLASH_MESSAGES``              Specifies whether or not to flash
                                          messages during security procedures.
                                          Defaults to ``True``.
+``SECURITY_MARKUP_FLASH``                Specifies whether or not to allow
+                                         flashed messages to use HTML/XML.
+                                         Defaults to ``False``.
 ``SECURITY_PASSWORD_HASH``               Specifies the password hash algorithm to
                                          use when encrypting and decrypting
                                          passwords. Recommended values for
