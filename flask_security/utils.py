@@ -276,7 +276,10 @@ def get_config(app):
 
 def get_message(key, **kwargs):
     rv = config_value('MSG_' + key)
-    return rv[0] % kwargs, rv[1]
+    if config_value('MARKUP_FLASH'):
+        return Markup(rv[0] % kwargs), rv[1]
+    else:
+        return rv[0] % kwargs, rv[1]
 
 
 def config_value(key, app=None, default=None):
